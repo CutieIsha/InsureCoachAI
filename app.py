@@ -3,6 +3,7 @@ import requests
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
+from flask import render_template
 
 
 api_key = os.getenv("OPENAI_API_KEY")
@@ -16,7 +17,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 @app.route("/")
 def home():
-    return "✅ Flask backend is running!"
+    return render_template("login.html")
 
 
 @app.route("/api/respond", methods=["POST"])
