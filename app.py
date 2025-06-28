@@ -30,6 +30,7 @@ def handle_login():
 def mentor():
     return render_template("index.html")
 
+
 @app.route("/api/respond", methods=["POST"])
 def respond():
     try:
