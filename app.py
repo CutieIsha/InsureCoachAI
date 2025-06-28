@@ -18,11 +18,11 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 def login():
     return render_template("login.html")
 
-@app.route("/home", methods=["POST"])
+@app.route("/loginBtn", methods=["POST"])
 def home():
     return render_template("home.html")
 
-@app.route("/mentor")
+@app.route("/btn btn-primary")
 def mentor():
     return render_template("index.html")
 
