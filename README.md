@@ -1,7 +1,7 @@
 
  🤖 InsureCoach AI
 
-AI-Powered Insurance Sales Training Assistant**
+AI-Powered Insurance Sales Training Assistant
 
 InsureCoach AI is an intelligent chatbot that helps insurance agents practice and perfect their pitch by simulating real-world customer interactions. Built with OpenAI’s GPT engine, it generates structured sales scripts tailored to different scenarios — instantly.
 
@@ -37,7 +37,7 @@ Whether you're preparing for a BFSI interview or training for a real client meet
 
 ---
 
-## 💼 Why Use InsureCoach AI?
+ 💼 Why Use InsureCoach AI?
 
 - 🎯 Trains agents with real-world sales conversations
 - 🧠 AI-powered, context-aware, and realistic
@@ -46,7 +46,7 @@ Whether you're preparing for a BFSI interview or training for a real client meet
 
 ---
 
-## 🛠️ Tech Stack
+ 🛠️ Tech Stack
 
 | Layer       | Technology                     |
 |-------------|--------------------------------|
@@ -57,12 +57,11 @@ Whether you're preparing for a BFSI interview or training for a real client meet
 
 ---
 
-## 🧪 How to Run Locally
+ 🧪 How to Run Locally
 
-### 1️⃣ Backend Setup
+ 1️⃣ Backend Setup
 
 ```bash
-cd backend
 pip install flask flask-cors python-dotenv requests
 ````
 
