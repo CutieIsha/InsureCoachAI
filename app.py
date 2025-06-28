@@ -1,28 +1,32 @@
 import os
 import requests
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_cors import CORS
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, redirect, url_for
 
-
-api_key = os.getenv("OPENAI_API_KEY")
-
+# Load environment variables first
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
+# Get API key from environment
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
 @app.route("/")
 def login():
     return render_template("login.html")
 
-@app.route("/loginBtn", methods=["POST"])
+@app.route("/home")
 def home():
     return render_template("home.html")
 
-@app.route("/btn btn-primary")
+@app.route("/loginBtn", methods=["POST"])
+def handle_login():
+    # You can add login validation here
+    return redirect(url_for('home'))
+
+@app.route("/mentor")
 def mentor():
     return render_template("index.html")
 
@@ -74,4 +78,6 @@ Now respond to this sales scenario:
         return jsonify({"reply": "Something went wrong. Please try again."})
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    # Use environment PORT or default to 5000
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
