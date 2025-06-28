@@ -609,9 +609,10 @@
   </style>
 </head>
 <body>
-  <a href="home.html" class="back-button">
-    ← Back to Home
-  </a>
+  <a href="{{ url_for('home') }}" class="back-button">
+  ← Back to Home
+</a>
+
 
   <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
   
