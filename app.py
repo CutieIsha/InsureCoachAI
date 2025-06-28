@@ -14,23 +14,17 @@ app = Flask(__name__)
 CORS(app)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-
-#Route 1: Login Page (Default Page)
 @app.route("/")
 def login():
     return render_template("login.html")
 
-# Route 2: Handle Login Button → Redirect to Home
 @app.route("/home", methods=["POST"])
 def home():
-    # Optional: validate login here if needed
     return render_template("home.html")
 
-# Route 3: Handle "Talk to Mentor" → Redirect to Mentor page
 @app.route("/mentor")
 def mentor():
     return render_template("index.html")
-
 
 @app.route("/api/respond", methods=["POST"])
 def respond():
