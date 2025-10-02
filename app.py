@@ -4,6 +4,18 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for
 from flask_cors import CORS
 from dotenv import load_dotenv
 
+from dotenv import load_dotenv
+
+load_dotenv()  # local testing only
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+if not OPENAI_API_KEY:
+    print("❌ API key is missing! Check Render Environment Variables.")
+else:
+    print("✅ API key loaded successfully. First 10 chars:", OPENAI_API_KEY[:10])
+
+
 # Load environment variables first
 load_dotenv()
 
