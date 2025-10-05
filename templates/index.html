@@ -658,45 +658,95 @@
     let currentConversationId = null;
     let conversationCounter = 1;
 
-    // Load data from localStorage
-    function loadFromStorage() {
-      try {
-        const storedConversations = localStorage.getItem('salesTrainingConversations');
-        const storedCurrentId = localStorage.getItem('salesTrainingCurrentId');
-        const storedCounter = localStorage.getItem('salesTrainingCounter');
-        
-        if (storedConversations) {
-          conversations = JSON.parse(storedConversations);
-          // Convert date strings back to Date objects
-          conversations.forEach(conv => {
-            conv.createdAt = new Date(conv.createdAt);
-            conv.messages.forEach(msg => {
-              if (msg.timestamp) msg.timestamp = new Date(msg.timestamp);
-            });
-          });
-        }
-        
-        if (storedCurrentId) {
-          currentConversationId = storedCurrentId;
-        }
-        
-        if (storedCounter) {
-          conversationCounter = parseInt(storedCounter);
-        }
-      } catch (error) {
-        console.error('Error loading from localStorage:', error);
-      }
+    // Function to check if the question is insurance-related
+    function isInsuranceRelated(text) {
+      const insuranceKeywords = [
+        'insurance', 'policy', 'premium', 'claim', 'coverage', 'deductible', 
+        'underwriting', 'beneficiary', 'insurer', 'insured', 'liability',
+        'life insurance', 'health insurance', 'auto insurance', 'home insurance',
+        'term insurance', 'whole life', 'endowment', 'annuity', 'rider',
+        'sales', 'selling', 'customer', 'client', 'prospect', 'lead',
+        'objection', 'closing', 'pitch', 'presentation', 'negotiation',
+        'roleplay', 'scenario', 'training', 'technique', 'strategy',
+        'commission', 'quota', 'pipeline', 'conversion', 'retention'
+      ];
+      
+      const lowerText = text.toLowerCase();
+      return insuranceKeywords.some(keyword => lowerText.includes(keyword));
     }
 
-    // Save data to localStorage
+    // Function to correct common spelling and grammar mistakes
+    function correctText(text) {
+      // Common spelling corrections
+      const corrections = {
+        'insurence': 'insurance',
+        'insuranse': 'insurance',
+        'preimum': 'premium',
+        'primium': 'premium',
+        'benifit': 'benefit',
+        'benificiary': 'beneficiary',
+        'poilcy': 'policy',
+        'polcy': 'policy',
+        'claime': 'claim',
+        'covrage': 'coverage',
+        'coverege': 'coverage',
+        'sellng': 'selling',
+        'custmer': 'customer',
+        'cusotmer': 'customer',
+        'scenerio': 'scenario',
+        'scenrio': 'scenario',
+        'techique': 'technique',
+        'tecnique': 'technique'
+      };
+
+      let correctedText = text;
+      
+      // Apply spelling corrections
+      Object.keys(corrections).forEach(wrong => {
+        const regex = new RegExp('\\b' + wrong + '\\b', 'gi');
+        correctedText = correctedText.replace(regex, corrections[wrong]);
+      });
+
+      // Basic grammar corrections
+      correctedText = correctedText
+        .replace(/\s+/g, ' ') // Remove extra spaces
+        .replace(/\s+([.,!?])/g, '$1') // Remove space before punctuation
+        .replace(/([.,!?])(\w)/g, '$1 $2') // Add space after punctuation
+        .trim();
+
+      // Capitalize first letter of sentences
+      correctedText = correctedText.replace(/(^\w|[.!?]\s+\w)/g, match => match.toUpperCase());
+
+      return correctedText;
+    }
+
+    // Function to format AI response better
+    function formatResponse(text) {
+      // Ensure proper line breaks and formatting
+      let formatted = text
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\n\n/g, "<br><br>")
+        .replace(/\n/g, "<br>")
+        .replace(/• /g, "🔹 ")
+        .replace(/(\d+\.)\s+/g, "<strong>$1</strong> ");
+
+      // Add better spacing for lists
+      formatted = formatted.replace(/(<br>)?(<strong>\d+\.<\/strong>)/g, "<br><br>$2");
+      formatted = formatted.replace(/(<br>)?(🔹)/g, "<br>$2");
+
+      return formatted;
+    }
+
+    // Load data from memory (using JavaScript variables instead of localStorage)
+    function loadFromStorage() {
+      // Data persists only in memory during the session
+      // No localStorage usage as per requirements
+    }
+
+    // Save data to memory
     function saveToStorage() {
-      try {
-        localStorage.setItem('salesTrainingConversations', JSON.stringify(conversations));
-        localStorage.setItem('salesTrainingCurrentId', currentConversationId || '');
-        localStorage.setItem('salesTrainingCounter', conversationCounter.toString());
-      } catch (error) {
-        console.error('Error saving to localStorage:', error);
-      }
+      // Data persists only in memory during the session
+      // No localStorage usage as per requirements
     }
 
     function generateId() {
@@ -866,14 +916,46 @@
       const sendBtn = document.getElementById("send-btn");
       const typingIndicator = document.getElementById("typing-indicator");
       
+      // Correct the user input for spelling and grammar
+      const correctedInput = correctText(input);
+      
+      // Check if the question is insurance-related
+      if (!isInsuranceRelated(correctedInput)) {
+        // Add user message
+        const userMsg = document.createElement('div');
+        userMsg.className = 'user-msg';
+        userMsg.innerHTML = correctedInput;
+        chatBox.appendChild(userMsg);
+        
+        // Save user message
+        saveMessage('user', correctedInput);
+        
+        document.getElementById("user-input").value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
+        
+        // Show out of scope message
+        setTimeout(() => {
+          const botMsg = document.createElement('div');
+          botMsg.className = 'bot-msg';
+          botMsg.innerHTML = "I apologize, but I'm specifically designed to assist with <strong>insurance sales training and related topics</strong>. Your question appears to be outside my area of expertise.<br><br>I can help you with:<br>🔹 Insurance sales techniques and strategies<br>🔹 Objection handling in insurance sales<br>🔹 Roleplay scenarios for insurance products<br>🔹 Customer engagement and closing techniques<br>🔹 Insurance product knowledge<br><br>Please feel free to ask me anything related to insurance sales!";
+          chatBox.appendChild(botMsg);
+          chatBox.scrollTop = chatBox.scrollHeight;
+          
+          // Save bot message
+          saveMessage('bot', botMsg.innerHTML);
+        }, 500);
+        
+        return;
+      }
+      
       // Add user message with animation
       const userMsg = document.createElement('div');
       userMsg.className = 'user-msg';
-      userMsg.innerHTML = input;
+      userMsg.innerHTML = correctedInput;
       chatBox.appendChild(userMsg);
       
       // Save user message
-      saveMessage('user', input);
+      saveMessage('user', correctedInput);
       
       document.getElementById("user-input").value = "";
       sendBtn.disabled = true;
@@ -884,10 +966,14 @@
       chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
-        const API_ENDPOINT = "https://insurecoachai-1.onrender.com/api/respond"; const res = await fetch(API_ENDPOINT, {
+        // Enhanced prompt for better responses
+        const enhancedPrompt = `You are an expert insurance sales training assistant. Please provide a well-structured, professional, and detailed response to the following query about insurance sales training. Format your response with clear sections, bullet points where appropriate, and actionable advice.\n\nQuery: ${correctedInput}`;
+        
+        const API_ENDPOINT = "https://insurecoachai-1.onrender.com/api/respond";
+        const res = await fetch(API_ENDPOINT, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt: input }),
+            body: JSON.stringify({ prompt: enhancedPrompt }),
         });
 
         const data = await res.json();
@@ -895,12 +981,8 @@
         // Hide typing indicator
         typingIndicator.style.display = 'none';
 
-        // Format markdown-like response with enhanced styling
-        const formattedReply = data.reply
-          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-          .replace(/\n/g, "<br>")
-          .replace(/• /g, "🔹 ")
-          .replace(/(\d+\.)/g, "<strong>$1</strong>");
+        // Format the response with improved styling
+        const formattedReply = formatResponse(data.reply);
 
         // Add bot message with animation delay
         setTimeout(() => {
@@ -920,12 +1002,12 @@
         setTimeout(() => {
           const botMsg = document.createElement('div');
           botMsg.className = 'bot-msg';
-          botMsg.innerHTML = "Sorry, I'm having trouble connecting to the server. Please try again in a moment.";
+          botMsg.innerHTML = "I apologize, but I'm experiencing technical difficulties connecting to the server. Please check your internet connection and try again in a moment. If the problem persists, please contact support.";
           chatBox.appendChild(botMsg);
           chatBox.scrollTop = chatBox.scrollHeight;
           
           // Save error message
-          saveMessage('bot', "Sorry, I'm having trouble connecting to the server. Please try again in a moment.");
+          saveMessage('bot', "I apologize, but I'm experiencing technical difficulties connecting to the server. Please check your internet connection and try again in a moment.");
         }, 200);
         
         console.error("Error:", error);
