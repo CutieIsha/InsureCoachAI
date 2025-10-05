@@ -884,10 +884,13 @@
       chatBox.scrollTop = chatBox.scrollHeight;
 
       try {
-        const res = await fetch("http://localhost:5000/api/respond", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt: input }),
+       // Dynamically choose API URL (Render or Local)
+const API_URL = window.location.hostname.includes("localhost")
+  ? "http://localhost:5000/api/respond"
+  : "https://insurecoachai-1.onrender.com/api/respond";
+
+const res = await fetch(API_URL, {
+
         });
 
         const data = await res.json();
